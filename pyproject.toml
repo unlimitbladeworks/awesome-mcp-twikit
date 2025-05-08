@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "mcp-twikit-tools"
 version = "1.0.0"
-description = "Aewsome Twitter MCP using Twikit"
+description = "Awesome Twitter MCP using Twikit"
 readme = "README.md"
 requires-python = ">=3.7"
 license = "MIT"
