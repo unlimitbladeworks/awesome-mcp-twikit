@@ -19,6 +19,7 @@ PASSWORD = os.getenv('TWITTER_PASSWORD')
 TOTP_SECRET = os.getenv('TWITTER_2FA')
 COOKIES_PATH = Path.home() / '.mcp-twikit-tools' / 'cookies.json'
 
+
 # Rate limit tracking
 RATE_LIMITS = {}
 RATE_LIMIT_WINDOW = 15 * 60  # 15 minutes in seconds
@@ -225,11 +226,12 @@ async def get_tweet_detail_wrapper(client, tweet_id):
     """获取单个推文的详细信息"""
     try:
         # 使用现有的API获取推文详情
-        tweet = await client.get_tweet(tweet_id)
+        tweet = await client.get_tweet_by_id(tweet_id)
         return tweet
     except Exception as e:
         logger.error(f"获取推文详情失败: {e}")
         return None
+
 
 async def get_tweet_replies_wrapper(client, tweet_id, count=50):
     """获取指定推文的回复"""
@@ -240,7 +242,7 @@ async def get_tweet_replies_wrapper(client, tweet_id, count=50):
         original_tweet = await get_tweet_detail_wrapper(client, tweet_id)
         if not original_tweet:
             return []
-            
+
         username = original_tweet.user.screen_name
         search_query = f"to:{username} conversation_id:{tweet_id}"
         replies = await client.search_tweet(search_query, product="Latest", count=count)
@@ -248,6 +250,7 @@ async def get_tweet_replies_wrapper(client, tweet_id, count=50):
     except Exception as e:
         logger.error(f"获取推文回复失败: {e}")
         return []
+
 
 @mcp.tool()
 async def get_tweet_thread(tweet_url: str, ctx: Context = None) -> str:
@@ -258,28 +261,34 @@ async def get_tweet_thread(tweet_url: str, ctx: Context = None) -> str:
     """
     try:
         client = await get_twitter_client()
-        
+
         # 从URL中提取推文ID
         tweet_id = tweet_url.split('/status/')[1].split('?')[0]
-        
+
         # 获取主推文
         main_tweet = await get_tweet_detail_wrapper(client, tweet_id)
         if not main_tweet:
             return f"无法找到ID为 {tweet_id} 的推文"
-        
-        # 获取回复线程
-        replies = await get_tweet_replies_wrapper(client, tweet_id, count=50)
-        
+
+        # 收集所有回复
+        all_replies = []
+        # 首先处理主推文中已包含的回复ID
+        if hasattr(main_tweet, 'replies') and main_tweet.replies:
+            for reply_tweet_ref in main_tweet.replies:
+                reply_tweet = await client.get_tweet_by_id(reply_tweet_ref.id)
+                if reply_tweet:
+                    all_replies.append(reply_tweet)
+
         # 将主推文和回复转换为markdown
         result = ["## 主推文"]
         result.append(convert_tweets_to_markdown([main_tweet]))
-        
-        if replies:
+
+        if all_replies:
             result.append("\n## 回复线程")
-            result.append(convert_tweets_to_markdown(replies))
+            result.append(convert_tweets_to_markdown(all_replies))
         else:
             result.append("\n## 回复线程\n*没有回复*")
-        
+
         return "\n".join(result)
     except Exception as e:
         logger.error(f"获取推文线程失败: {e}")
@@ -292,9 +301,9 @@ def convert_tweets_to_markdown(tweets) -> str:
     for tweet in tweets:
         result.append(f"### @{tweet.user.screen_name}")
         result.append(f"**{tweet.created_at}**")
-        result.append(tweet.text)
-        if hasattr(tweet, 'retweet_count') and hasattr(tweet, 'like_count'):
-            result.append(f"♻️ {tweet.retweet_count} 🧡 {tweet.like_count}")
+        result.append(tweet.full_text)
+        if hasattr(tweet, 'retweet_count') and hasattr(tweet, 'like_count') and hasattr(tweet, 'view_count'):
+            result.append(f"♻️ {tweet.retweet_count} 🧡 {tweet.like_count} 👁 {tweet.view_count}")
         if tweet.media:
             for media in tweet.media:
                 result.append(f"![media]({media.url})")
@@ -305,4 +314,4 @@ def convert_tweets_to_markdown(tweets) -> str:
 if __name__ == '__main__':
     import asyncio
 
-    asyncio.run(get_user_tweets("test"))
+    asyncio.run(get_tweet_thread("https://x.com/0xMilkRabbit/status/1920040991643607239"))
