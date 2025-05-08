@@ -221,6 +221,34 @@ async def delete_dm(message_id: str) -> str:
         return f"Failed to delete DM: {e}"
 
 
+async def get_tweet_detail_wrapper(client, tweet_id):
+    """获取单个推文的详细信息"""
+    try:
+        # 使用现有的API获取推文详情
+        tweet = await client.get_tweet(tweet_id)
+        return tweet
+    except Exception as e:
+        logger.error(f"获取推文详情失败: {e}")
+        return None
+
+async def get_tweet_replies_wrapper(client, tweet_id, count=50):
+    """获取指定推文的回复"""
+    try:
+        # 使用search_tweet API获取回复
+        # 使用Twitter搜索语法 "to:用户名 conversation_id:推文ID"
+        # 首先获取原始推文以获取用户名
+        original_tweet = await get_tweet_detail_wrapper(client, tweet_id)
+        if not original_tweet:
+            return []
+            
+        username = original_tweet.user.screen_name
+        search_query = f"to:{username} conversation_id:{tweet_id}"
+        replies = await client.search_tweet(search_query, product="Latest", count=count)
+        return replies
+    except Exception as e:
+        logger.error(f"获取推文回复失败: {e}")
+        return []
+
 @mcp.tool()
 async def get_tweet_thread(tweet_url: str, ctx: Context = None) -> str:
     """获取指定推文及其所有回复线程内容。
@@ -235,12 +263,12 @@ async def get_tweet_thread(tweet_url: str, ctx: Context = None) -> str:
         tweet_id = tweet_url.split('/status/')[1].split('?')[0]
         
         # 获取主推文
-        main_tweet = await client.get_tweet_detail(tweet_id)
+        main_tweet = await get_tweet_detail_wrapper(client, tweet_id)
         if not main_tweet:
             return f"无法找到ID为 {tweet_id} 的推文"
         
         # 获取回复线程
-        replies = await client.get_tweet_replies(tweet_id, count=50)
+        replies = await get_tweet_replies_wrapper(client, tweet_id, count=50)
         
         # 将主推文和回复转换为markdown
         result = ["## 主推文"]
