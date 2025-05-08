@@ -221,6 +221,43 @@ async def delete_dm(message_id: str) -> str:
         return f"Failed to delete DM: {e}"
 
 
+@mcp.tool()
+async def get_tweet_thread(tweet_url: str, ctx: Context = None) -> str:
+    """获取指定推文及其所有回复线程内容。
+    
+    参数:
+        tweet_url: 推文的URL，格式如 https://x.com/username/status/123456789
+    """
+    try:
+        client = await get_twitter_client()
+        
+        # 从URL中提取推文ID
+        tweet_id = tweet_url.split('/status/')[1].split('?')[0]
+        
+        # 获取主推文
+        main_tweet = await client.get_tweet_detail(tweet_id)
+        if not main_tweet:
+            return f"无法找到ID为 {tweet_id} 的推文"
+        
+        # 获取回复线程
+        replies = await client.get_tweet_replies(tweet_id, count=50)
+        
+        # 将主推文和回复转换为markdown
+        result = ["## 主推文"]
+        result.append(convert_tweets_to_markdown([main_tweet]))
+        
+        if replies:
+            result.append("\n## 回复线程")
+            result.append(convert_tweets_to_markdown(replies))
+        else:
+            result.append("\n## 回复线程\n*没有回复*")
+        
+        return "\n".join(result)
+    except Exception as e:
+        logger.error(f"获取推文线程失败: {e}")
+        return f"获取推文线程失败: {e}"
+
+
 def convert_tweets_to_markdown(tweets) -> str:
     """Convert a list of tweets to markdown format."""
     result = []
