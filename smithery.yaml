@@ -29,9 +29,7 @@ startCommand:
     (config) => ({
     "command": "uvx",
       "args": [
-        "--from",
-        "git+https://github.com/unlimitbladeworks/awesome-mcp-twikit",
-        "mcp-twikit-tools"
+        npx -y @smithery/cli@latest inspect @unlimitbladeworks/awesome-mcp-twikit
       ],
       "env": {
         "TWITTER_USERNAME": "你的推特用户名",
