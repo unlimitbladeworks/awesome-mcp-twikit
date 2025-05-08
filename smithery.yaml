@@ -9,6 +9,7 @@ startCommand:
       - twitterUsername
       - twitterEmail
       - twitterPassword
+      - twitter2FA
     properties:
       twitterUsername:
         type: string
@@ -19,7 +20,10 @@ startCommand:
       twitterPassword:
         type: string
         description: Your Twitter password.
+      twitter2FA:
+        type: string
+        description: Your Twitter 2fa.
   commandFunction:
     # A function that produces the CLI command to start the MCP on stdio.
     |-
-    (config) => ({ command: 'mcp-twikit', env: { TWITTER_USERNAME: config.twitterUsername, TWITTER_EMAIL: config.twitterEmail, TWITTER_PASSWORD: config.twitterPassword } })
+    (config) => ({ command: 'mcp-twikit', env: { TWITTER_USERNAME: config.twitterUsername, TWITTER_EMAIL: config.twitterEmail, TWITTER_PASSWORD: config.twitterPassword, TWOFA: config.twitter2FA } })

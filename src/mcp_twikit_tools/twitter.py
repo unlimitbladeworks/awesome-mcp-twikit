@@ -7,7 +7,7 @@ from typing import Optional, List
 import time
 
 # Create an MCP server
-mcp = FastMCP("mcp-twikit")
+mcp = FastMCP("mcp-twikit-tools")
 logger = logging.getLogger(__name__)
 httpx_logger = logging.getLogger("httpx")
 httpx_logger.setLevel(logging.WARNING)
@@ -15,33 +15,45 @@ httpx_logger.setLevel(logging.WARNING)
 USERNAME = os.getenv('TWITTER_USERNAME')
 EMAIL = os.getenv('TWITTER_EMAIL')
 PASSWORD = os.getenv('TWITTER_PASSWORD')
-USER_AGENT = os.getenv('USER_AGENT')
+TOTP_SECRET = os.getenv('TWOFA')
 COOKIES_PATH = Path.home() / '.mcp-twikit' / 'cookies.json'
 
 # Rate limit tracking
 RATE_LIMITS = {}
 RATE_LIMIT_WINDOW = 15 * 60  # 15 minutes in seconds
 
+
 async def get_twitter_client() -> twikit.Client:
     """Initialize and return an authenticated Twitter client."""
-    client = twikit.Client('en-US', user_agent=USER_AGENT)
+    client = twikit.Client()
 
     if COOKIES_PATH.exists():
-        client.load_cookies(COOKIES_PATH)
-    else:
         try:
-            await client.login(
-                auth_info_1=USERNAME,
-                auth_info_2=EMAIL,
-                password=PASSWORD
-            )
+            client.load_cookies(COOKIES_PATH)
+            # 可以添加验证cookie是否有效的逻辑
         except Exception as e:
-            logger.error(f"Failed to login: {e}")
-            raise
-        COOKIES_PATH.parent.mkdir(parents=True, exist_ok=True)
-        client.save_cookies(COOKIES_PATH)
+            logger.warning(f"无法加载cookie，将重新登录: {e}")
+            await login_and_save_cookies(client)
+    else:
+        await login_and_save_cookies(client)
 
     return client
+
+
+async def login_and_save_cookies(client):
+    try:
+        await client.login(
+            auth_info_1=USERNAME,
+            auth_info_2=EMAIL,
+            password=PASSWORD,
+            totp_secret=TOTP_SECRET,
+        )
+        COOKIES_PATH.parent.mkdir(parents=True, exist_ok=True)
+        client.save_cookies(COOKIES_PATH)
+    except Exception as e:
+        logger.error(f"登录失败: {e}")
+        raise
+
 
 def check_rate_limit(endpoint: str) -> bool:
     """Check if we're within rate limits for a given endpoint."""
@@ -59,9 +71,10 @@ def check_rate_limit(endpoint: str) -> bool:
         return len(RATE_LIMITS[endpoint]) < 1000  # 1000 DMs per 15 minutes
     return True
 
+
 # Existing search and read tools
 @mcp.tool()
-async def search_twitter(query: str, sort_by: str = 'Top', count: int = 10, ctx: Context = None) -> str:
+async def search_twitter(query: str, sort_by: str = 'Top', count: int = 15, ctx: Context = None) -> str:
     """Search twitter with a query. Sort by 'Top' or 'Latest'"""
     try:
         client = await get_twitter_client()
@@ -71,8 +84,9 @@ async def search_twitter(query: str, sort_by: str = 'Top', count: int = 10, ctx:
         logger.error(f"Failed to search tweets: {e}")
         return f"Failed to search tweets: {e}"
 
+
 @mcp.tool()
-async def get_user_tweets(username: str, tweet_type: str = 'Tweets', count: int = 10, ctx: Context = None) -> str:
+async def get_user_tweets(username: str, tweet_type: str = 'Tweets', count: int = 15, ctx: Context = None) -> str:
     """Get tweets from a specific user's timeline."""
     try:
         client = await get_twitter_client()
@@ -91,6 +105,7 @@ async def get_user_tweets(username: str, tweet_type: str = 'Tweets', count: int 
         logger.error(f"Failed to get user tweets: {e}")
         return f"Failed to get user tweets: {e}"
 
+
 @mcp.tool()
 async def get_timeline(count: int = 20) -> str:
     """Get tweets from your home timeline (For You)."""
@@ -101,6 +116,7 @@ async def get_timeline(count: int = 20) -> str:
     except Exception as e:
         logger.error(f"Failed to get timeline: {e}")
         return f"Failed to get timeline: {e}"
+
 
 @mcp.tool()
 async def get_latest_timeline(count: int = 20) -> str:
@@ -113,13 +129,14 @@ async def get_latest_timeline(count: int = 20) -> str:
         logger.error(f"Failed to get latest timeline: {e}")
         return f"Failed to get latest timeline: {e}"
 
+
 # New write tools
 @mcp.tool()
 async def post_tweet(
-    text: str,
-    media_paths: Optional[List[str]] = None,
-    reply_to: Optional[str] = None,
-    tags: Optional[List[str]] = None
+        text: str,
+        media_paths: Optional[List[str]] = None,
+        reply_to: Optional[str] = None,
+        tags: Optional[List[str]] = None
 ) -> str:
     """Post a tweet with optional media, reply, and tags."""
     try:
@@ -153,6 +170,7 @@ async def post_tweet(
         logger.error(f"Failed to post tweet: {e}")
         return f"Failed to post tweet: {e}"
 
+
 @mcp.tool()
 async def delete_tweet(tweet_id: str) -> str:
     """Delete a tweet by its ID."""
@@ -163,6 +181,7 @@ async def delete_tweet(tweet_id: str) -> str:
     except Exception as e:
         logger.error(f"Failed to delete tweet: {e}")
         return f"Failed to delete tweet: {e}"
+
 
 @mcp.tool()
 async def send_dm(user_id: str, message: str, media_path: Optional[str] = None) -> str:
@@ -188,6 +207,7 @@ async def send_dm(user_id: str, message: str, media_path: Optional[str] = None) 
         logger.error(f"Failed to send DM: {e}")
         return f"Failed to send DM: {e}"
 
+
 @mcp.tool()
 async def delete_dm(message_id: str) -> str:
     """Delete a direct message by its ID."""
@@ -198,6 +218,7 @@ async def delete_dm(message_id: str) -> str:
     except Exception as e:
         logger.error(f"Failed to delete DM: {e}")
         return f"Failed to delete DM: {e}"
+
 
 def convert_tweets_to_markdown(tweets) -> str:
     """Convert a list of tweets to markdown format."""
