@@ -22,4 +22,4 @@ dependencies = [
 Homepage = "https://github.com/unlimitbladeworks/awesome-mcp-twikit"
 
 [project.scripts]
-mcp-twikit = "mcp_twikit_tools.twitter:mcp.run"
+mcp-twikit-tools = "mcp_twikit_tools.twitter:mcp.run"

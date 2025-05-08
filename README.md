@@ -1,9 +1,8 @@
-# MCP-Twikit
+# Awesome-MCP-Twikit
 
 [![smithery badge](https://smithery.ai/badge/mcp-twikit)](https://smithery.ai/server/mcp-twikit)
 A Model Context Protocol (MCP) server for interacting with Twitter.
 
-<a href="https://glama.ai/mcp/servers/49i9dd08w8"><img width="380" height="200" src="https://glama.ai/mcp/servers/49i9dd08w8/badge" alt="mcp-twikit MCP server" /></a>
 
 ## Installation
 
