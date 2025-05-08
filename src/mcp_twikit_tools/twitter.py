@@ -5,6 +5,7 @@ from pathlib import Path
 import logging
 from typing import Optional, List
 import time
+import traceback
 
 # Create an MCP server
 mcp = FastMCP("mcp-twikit-tools")
@@ -25,7 +26,7 @@ RATE_LIMIT_WINDOW = 15 * 60  # 15 minutes in seconds
 
 async def get_twitter_client() -> twikit.Client:
     """Initialize and return an authenticated Twitter client."""
-    client = twikit.Client()
+    client = twikit.Client('en-US')
 
     if COOKIES_PATH.exists():
         try:
@@ -46,12 +47,12 @@ async def login_and_save_cookies(client):
             auth_info_1=USERNAME,
             auth_info_2=EMAIL,
             password=PASSWORD,
-            totp_secret=TOTP_SECRET,
+            totp_secret=TOTP_SECRET
         )
         COOKIES_PATH.parent.mkdir(parents=True, exist_ok=True)
         client.save_cookies(COOKIES_PATH)
-    except Exception as e:
-        logger.error(f"登录失败: {e}")
+    except Exception:
+        logger.error(f"登录失败:", traceback.print_exc())
         raise
 
 
@@ -234,3 +235,9 @@ def convert_tweets_to_markdown(tweets) -> str:
                 result.append(f"![media]({media.url})")
         result.append("---")
     return "\n".join(result)
+
+
+if __name__ == '__main__':
+    import asyncio
+
+    asyncio.run(get_user_tweets("test"))
