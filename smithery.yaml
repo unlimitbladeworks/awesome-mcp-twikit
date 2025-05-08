@@ -30,5 +30,5 @@ startCommand:
       TWITTER_USERNAME: config.twitterUsername, 
       TWITTER_EMAIL: config.twitterEmail, 
       TWITTER_PASSWORD: config.twitterPassword, 
-      TWOFA: config.twitter2FA 
+      TWITTER_2FA: config.twitter2FA 
     } })
