@@ -17,6 +17,7 @@ RUN pip install --no-cache-dir .
 ENV TWITTER_USERNAME "@example"
 ENV TWITTER_EMAIL "me@example.com"
 ENV TWITTER_PASSWORD "secret"
+ENV TWITTER_2FA "2fa"
 
 # Set the entrypoint command to run the MCP server
-ENTRYPOINT ["mcp-twikit"]
+ENTRYPOINT ["mcp-twikit-tools"]

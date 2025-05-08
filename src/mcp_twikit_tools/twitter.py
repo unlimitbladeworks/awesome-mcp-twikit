@@ -15,8 +15,8 @@ httpx_logger.setLevel(logging.WARNING)
 USERNAME = os.getenv('TWITTER_USERNAME')
 EMAIL = os.getenv('TWITTER_EMAIL')
 PASSWORD = os.getenv('TWITTER_PASSWORD')
-TOTP_SECRET = os.getenv('TWOFA')
-COOKIES_PATH = Path.home() / '.mcp-twikit' / 'cookies.json'
+TOTP_SECRET = os.getenv('TWITTER_2FA')
+COOKIES_PATH = Path.home() / '.mcp-twikit-tools' / 'cookies.json'
 
 # Rate limit tracking
 RATE_LIMITS = {}
@@ -227,6 +227,8 @@ def convert_tweets_to_markdown(tweets) -> str:
         result.append(f"### @{tweet.user.screen_name}")
         result.append(f"**{tweet.created_at}**")
         result.append(tweet.text)
+        if hasattr(tweet, 'retweet_count') and hasattr(tweet, 'like_count'):
+            result.append(f"♻️ {tweet.retweet_count} 🧡 {tweet.like_count}")
         if tweet.media:
             for media in tweet.media:
                 result.append(f"![media]({media.url})")

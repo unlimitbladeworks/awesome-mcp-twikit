@@ -3,14 +3,14 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "mcp-twikit"
-version = "0.1.0"
-description = "Twitter search tool for FastMCP using Twikit"
+name = "mcp-twikit-tools"
+version = "1.0.0"
+description = "Aewsome Twitter MCP using Twikit"
 readme = "README.md"
 requires-python = ">=3.7"
 license = "MIT"
 authors = [
-    { name = "Adhika Setya Pramudita", email = "adhika.setya.p@gmail.com" }
+    { name = "@dami16z", twitter = "@dami16z" }
 ]
 dependencies = [
     "fastmcp",
@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/adhikasp/mcp-twikit"
+Homepage = "https://github.com/unlimitbladeworks/awesome-mcp-twikit"
 
 [project.scripts]
 mcp-twikit = "mcp_twikit_tools.twitter:mcp.run"

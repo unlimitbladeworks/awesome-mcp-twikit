@@ -19,12 +19,19 @@ npx -y @smithery/cli install mcp-twikit --client claude
 ```json
 {
     "mcpServer": {
-        "command": "uvx",
-        "args": ["--from", "git+https://github.com/adhikasp/mcp-twikit", "mcp-twikit"],
-        "env": {
-            "TWITTER_USERNAME": "@example",
-            "TWITTER_EMAIL": "me@example.com",
-            "TWITTER_PASSWORD": "secret",
+        "mcp-twikit-tools": {
+            "command": "uvx",
+            "args": [
+                "--from",
+                "git+https://github.com/unlimitbladeworks/awesome-mcp-twikit",
+                "mcp-twikit-tools"
+            ],
+            "env": {
+                "TWITTER_USERNAME": "@example",
+                "TWITTER_EMAIL": "me@example.com",
+                "TWITTER_PASSWORD": "secret",
+                "TWITTER_2FA": "2FA"
+            }
         }
     }
 }
