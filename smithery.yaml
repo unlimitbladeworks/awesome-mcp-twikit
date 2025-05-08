@@ -26,9 +26,17 @@ startCommand:
   commandFunction:
     # A function that produces the CLI command to start the MCP on stdio.
     |-
-    (config) => ({ command: 'mcp-twikit-tools', env: { 
-      TWITTER_USERNAME: config.twitterUsername, 
-      TWITTER_EMAIL: config.twitterEmail, 
-      TWITTER_PASSWORD: config.twitterPassword, 
-      TWITTER_2FA: config.twitter2FA 
-    } })
+    (config) => ({
+    "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/unlimitbladeworks/awesome-mcp-twikit",
+        "mcp-twikit-tools"
+      ],
+      "env": {
+        "TWITTER_USERNAME": "你的推特用户名",
+        "TWITTER_EMAIL": "你的推特邮箱",
+        "TWITTER_PASSWORD": "你的推特密码",
+        "TWITTER_2FA": "你的2FA密钥"
+      }
+    })
