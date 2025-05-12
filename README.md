@@ -1,6 +1,6 @@
 # Awesome-MCP-Twikit
 
-[![smithery badge](https://smithery.ai/badge/mcp-twikit)](https://smithery.ai/server/mcp-twikit)
+[![smithery badge](https://smithery.ai/badge/@unlimitbladeworks/awesome-mcp-twikit)](https://smithery.ai/server/@unlimitbladeworks/awesome-mcp-twikit)
 A Model Context Protocol (MCP) server for interacting with Twitter.
 
 
