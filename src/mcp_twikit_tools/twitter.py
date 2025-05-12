@@ -314,7 +314,9 @@ def convert_tweets_to_markdown(tweets) -> str:
     return "\n".join(result)
 
 
-if __name__ == '__main__':
-    import asyncio
-
-    asyncio.run(get_tweet_thread("https://x.com/0xMilkRabbit/status/1920040991643607239"))
+if __name__ == "__main__":
+    mcp.run(transport='stdio')
+# if __name__ == '__main__':
+#     import asyncio
+#
+#     asyncio.run(get_tweet_thread("https://x.com/0xMilkRabbit/status/1920040991643607239"))

@@ -29,9 +29,9 @@ startCommand:
     (config) => ({
     "command": "uvx",
       "env": {
-        "TWITTER_USERNAME": "你的推特用户名",
-        "TWITTER_EMAIL": "你的推特邮箱",
-        "TWITTER_PASSWORD": "你的推特密码",
-        "TWITTER_2FA": "你的2FA密钥"
+        "twitterUsername": "你的推特用户名",
+        "twitterEmail": "你的推特邮箱",
+        "twitterPassword": "你的推特密码",
+        "twitter2FA": "你的2FA密钥"
       }
     })
