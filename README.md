@@ -29,7 +29,9 @@ npx -y @smithery/cli install mcp-twikit --client claude
                 "TWITTER_USERNAME": "@example",
                 "TWITTER_EMAIL": "me@example.com",
                 "TWITTER_PASSWORD": "secret",
-                "TWITTER_2FA": "2FA"
+                "TWITTER_2FA": "2FA",
+                "ENABLE_PROXY": "true",
+                "PROXY": "http://ip:port"
             }
         }
     }

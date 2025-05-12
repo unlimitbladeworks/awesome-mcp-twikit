@@ -18,6 +18,8 @@ ENV TWITTER_USERNAME="@example"
 ENV TWITTER_EMAIL="me@example.com"
 ENV TWITTER_PASSWORD="secret"
 ENV TWITTER_2FA="2fa"
+ENV ENABLE_PROXY="true"
+ENV PROXY="proxy"
 
 # Set the entrypoint command to run the MCP server
 ENTRYPOINT ["mcp-twikit-tools"]

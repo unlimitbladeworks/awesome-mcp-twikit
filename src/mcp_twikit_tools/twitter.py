@@ -17,8 +17,9 @@ USERNAME = os.getenv('TWITTER_USERNAME')
 EMAIL = os.getenv('TWITTER_EMAIL')
 PASSWORD = os.getenv('TWITTER_PASSWORD')
 TOTP_SECRET = os.getenv('TWITTER_2FA')
+ENABLE_PROXY = os.getenv('ENABLE_PROXY')
+PROXY = os.getenv('PROXY')
 COOKIES_PATH = Path.home() / '.mcp-twikit-tools' / 'cookies.json'
-
 
 # Rate limit tracking
 RATE_LIMITS = {}
@@ -27,8 +28,10 @@ RATE_LIMIT_WINDOW = 15 * 60  # 15 minutes in seconds
 
 async def get_twitter_client() -> twikit.Client:
     """Initialize and return an authenticated Twitter client."""
-    client = twikit.Client('en-US')
-
+    if ENABLE_PROXY == 'true':
+        client = twikit.Client('en-US', proxy=PROXY)
+    else:
+        client = twikit.Client('en-US')
     if COOKIES_PATH.exists():
         try:
             client.load_cookies(COOKIES_PATH)
