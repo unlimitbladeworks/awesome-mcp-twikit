@@ -305,8 +305,8 @@ def convert_tweets_to_markdown(tweets) -> str:
         result.append(f"### @{tweet.user.screen_name}")
         result.append(f"**{tweet.created_at}**")
         result.append(tweet.full_text)
-        if hasattr(tweet, 'retweet_count') and hasattr(tweet, 'like_count') and hasattr(tweet, 'view_count'):
-            result.append(f"♻️ {tweet.retweet_count} 🧡 {tweet.like_count} 👁 {tweet.view_count}")
+        if hasattr(tweet, 'retweet_count') and hasattr(tweet, 'favorite_count') and hasattr(tweet, 'view_count'):
+            result.append(f"♻️ {tweet.retweet_count} 🧡 {tweet.favorite_count} 👁 {tweet.view_count}")
         if tweet.media:
             for media in tweet.media:
                 result.append(f"![media]({media.url})")
