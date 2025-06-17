@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/unlimitbladeworks-awesome-mcp-twikit-badge.png)](https://mseep.ai/app/unlimitbladeworks-awesome-mcp-twikit)
+
 # Awesome-MCP-Twikit
 
 [![smithery badge](https://smithery.ai/badge/@unlimitbladeworks/awesome-mcp-twikit)](https://smithery.ai/server/@unlimitbladeworks/awesome-mcp-twikit)
